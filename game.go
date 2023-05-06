@@ -24,9 +24,11 @@ func (p *Position) Init() {
 }
 
 type Game struct {
-	field Field
-	pos   Position
-	block BlockShape
+	field  Field
+	pos    Position
+	block  BlockShape
+	hold   BlockShape
+	holded bool
 }
 
 func NewGame() *Game {
@@ -58,6 +60,8 @@ func NewGame() *Game {
 	}
 	g.pos.Init()
 	g.block = BLOCKS[distribution{}.BlockKind()]
+	g.hold = NONE_BLOCK
+	g.holded = false
 	return g
 }
 
@@ -103,13 +107,25 @@ func (g *Game) Draw() {
 		}
 	}
 
+	fmt.Print("\033[2;28HHOLD")
+	if g.hold != NONE_BLOCK {
+		for y := 0; y < 4; y++ {
+			fmt.Printf("\033[%d;%dH", y+3, 28) // カーソルを移動
+			for x := 0; x < 4; x++ {
+				fmt.Printf("%s", ColorTable[g.hold[y][x]])
+			}
+			fmt.Println()
+		}
+	}
+
 	fmt.Print("\x1b[H")
 	for y := 0; y < FIELD_HEIGHT-1; y++ {
 		for x := 1; x < FIELD_WIDTH-1; x++ {
 			fmt.Print(ColorTable[fieldBuf[y][x]])
 		}
-		fmt.Println("\x1b[0m")
+		fmt.Println()
 	}
+	fmt.Println("\x1b[0m")
 }
 
 func (g *Game) SpawnBlock() error {
@@ -167,12 +183,28 @@ func (g *Game) HardDrop() {
 	g.MoveBlock(g.pos)
 }
 
+func (g *Game) Hold() {
+	if g.holded {
+		return
+	}
+
+	if g.hold == NONE_BLOCK {
+		g.hold = g.block
+		g.SpawnBlock()
+	} else {
+		g.block, g.hold = g.hold, g.block
+		g.pos.Init()
+	}
+	g.holded = true
+}
+
 func (g *Game) landing() error {
 	g.FixBlock()
 	g.EraseLine()
 	if err := g.SpawnBlock(); err != nil {
 		return err
 	}
+	g.holded = false
 	return nil
 }
 

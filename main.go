@@ -81,6 +81,11 @@ func main() {
 			game.Draw()
 			mu.Unlock()
 			time.Sleep(100 * time.Millisecond)
+		} else if IsKeyPressed(KEY_SPACE) {
+			mu.Lock()
+			game.Hold()
+			game.Draw()
+			mu.Unlock()
 		} else if IsKeyPressed(KEY_Q) {
 			fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 			game.Quit()

@@ -69,6 +69,13 @@ var ColorTable = []string{
 
 type BlockShape [4][4]int
 
+var NONE_BLOCK = BlockShape{
+	{0, 0, 0, 0},
+	{0, 0, 0, 0},
+	{0, 0, 0, 0},
+	{0, 0, 0, 0},
+}
+
 var BLOCKS = map[BlockKind]BlockShape{
 	I: {
 		{0, 0, 0, 0},

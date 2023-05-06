@@ -11,6 +11,7 @@ const (
 	KEY_RIGHT   = 0x27
 	KEY_UP      = 0x26
 	KEY_DOWN    = 0x28
+	KEY_SPACE   = 0x20
 )
 
 var (
