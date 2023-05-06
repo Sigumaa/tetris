@@ -75,8 +75,26 @@ func IsCollision(field Field, pos Position, block BlockShape) bool {
 	return false
 }
 
+func (g *Game) GhostPos() Position {
+	ghostPos := g.pos
+	for !IsCollision(g.field, Position{ghostPos.x, ghostPos.y + 1}, g.block) {
+		ghostPos.y++
+	}
+	return ghostPos
+}
+
 func (g *Game) Draw() {
 	fieldBuf := g.field
+	ghostPos := g.GhostPos()
+
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			if g.block[y][x] != int(NONE) {
+				fieldBuf[y+ghostPos.y][x+ghostPos.x] = int(GHOST)
+			}
+		}
+	}
+
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
 			if g.block[y][x] != int(NONE) {

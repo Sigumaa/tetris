@@ -44,6 +44,7 @@ type BlockColor int
 const (
 	NONE BlockColor = iota
 	WALL
+	GHOST
 	I_COLOR
 	O_COLOR
 	S_COLOR
@@ -56,6 +57,7 @@ const (
 var ColorTable = []string{
 	"\x1b[48;2;000;000;000m  ",
 	"\x1b[48;2;127;127;127m__",
+	"\x1b[48;2;000;000;000m[]",
 	"\x1b[48;2;000;000;255m__",
 	"\x1b[48;2;000;255;000m__",
 	"\x1b[48;2;000;255;255m__",
