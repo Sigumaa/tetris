@@ -33,27 +33,27 @@ func NewGame() *Game {
 	g := new(Game)
 
 	g.field = [FIELD_HEIGHT][FIELD_WIDTH]int{
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-		{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, int(WALL), 0},
+		{0, int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), int(WALL), 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	}
 	g.pos.Init()
@@ -67,7 +67,7 @@ func IsCollision(field Field, pos Position, block BlockShape) bool {
 			if y+pos.y >= FIELD_HEIGHT || x+pos.x >= FIELD_WIDTH {
 				continue
 			}
-			if (field[y+pos.y][x+pos.x] & block[y][x]) == 1 {
+			if (block[y][x] != int(NONE)) && (field[y+pos.y][x+pos.x] != int(NONE)) {
 				return true
 			}
 		}
@@ -79,8 +79,8 @@ func (g *Game) Draw() {
 	fieldBuf := g.field
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if g.block[y][x] == 1 {
-				fieldBuf[y+g.pos.y][x+g.pos.x] = 1
+			if g.block[y][x] != int(NONE) {
+				fieldBuf[y+g.pos.y][x+g.pos.x] = g.block[y][x]
 			}
 		}
 	}
@@ -88,13 +88,9 @@ func (g *Game) Draw() {
 	fmt.Print("\x1b[H")
 	for y := 0; y < FIELD_HEIGHT-1; y++ {
 		for x := 1; x < FIELD_WIDTH-1; x++ {
-			if fieldBuf[y][x] == 1 {
-				fmt.Print("[]")
-			} else {
-				fmt.Print(" _")
-			}
+			fmt.Print(ColorTable[fieldBuf[y][x]])
 		}
-		fmt.Println()
+		fmt.Println("\x1b[0m")
 	}
 }
 
@@ -110,8 +106,8 @@ func (g *Game) SpawnBlock() error {
 func (g *Game) FixBlock() {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if g.block[y][x] == 1 {
-				g.field[y+g.pos.y][x+g.pos.x] = 1
+			if g.block[y][x] != int(NONE) {
+				g.field[y+g.pos.y][x+g.pos.x] = g.block[y][x]
 			}
 		}
 	}
@@ -173,6 +169,6 @@ func (g *Game) Over() {
 }
 
 func (g *Game) Quit() {
-	fmt.Print("\x1b[?25h")
+	fmt.Print("\x1b[0m\x1b[2J\x1b[?25h")
 	os.Exit(0)
 }
