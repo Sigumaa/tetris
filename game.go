@@ -57,12 +57,26 @@ func NewGame() *Game {
 	return g
 }
 
-func Draw(game *Game) {
-	fieldBuf := game.field
+func IsCollision(field Field, pos Position, block blockKind) bool {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if BLOCKS[game.block][y][x] == 1 {
-				fieldBuf[y+game.pos.y][x+game.pos.x] = 1
+			if y+pos.y >= FIELD_HEIGHT || x+pos.x >= FIELD_WIDTH {
+				continue
+			}
+			if (field[y+pos.y][x+pos.x] & BLOCKS[block][y][x]) == 1 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (g *Game) Draw() {
+	fieldBuf := g.field
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			if BLOCKS[g.block][y][x] == 1 {
+				fieldBuf[y+g.pos.y][x+g.pos.x] = 1
 			}
 		}
 	}
@@ -78,20 +92,6 @@ func Draw(game *Game) {
 		}
 		fmt.Println()
 	}
-}
-
-func IsCollision(field Field, pos Position, block blockKind) bool {
-	for y := 0; y < 4; y++ {
-		for x := 0; x < 4; x++ {
-			if y+pos.y >= FIELD_HEIGHT || x+pos.x >= FIELD_WIDTH {
-				continue
-			}
-			if (field[y+pos.y][x+pos.x] & BLOCKS[block][y][x]) == 1 {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func (g *Game) FixBlock() {
