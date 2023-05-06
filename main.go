@@ -97,7 +97,7 @@ type Position struct {
 func IsCollision(field Field, pos Position, block blockKind) bool {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if (field[y+pos.y+1][x+pos.x] & BLOCKS[block][y][x]) == 1 {
+			if (field[y+pos.y][x+pos.x] & BLOCKS[block][y][x]) == 1 {
 				return true
 			}
 		}
@@ -136,9 +136,10 @@ func main() {
 
 	for {
 		fieldBuf := field
+		newPos := Position{pos.x, pos.y + 1}
 
-		if !IsCollision(field, pos, I) {
-			pos.y++
+		if !IsCollision(field, newPos, I) {
+			pos = newPos
 		}
 
 		for y := 0; y < 4; y++ {
@@ -164,11 +165,26 @@ func main() {
 
 		q := false
 		for i := 0; i < 60; i++ {
-			time.Sleep(1 * time.Millisecond)
-			if IsKeyPressed(KEY_Q) {
+			if IsKeyPressed(KEY_LEFT) {
+				newPos := Position{pos.x - 1, pos.y}
+				if !IsCollision(field, newPos, I) {
+					pos = newPos
+				}
+			} else if IsKeyPressed(KEY_RIGHT) {
+				newPos := Position{pos.x + 1, pos.y}
+				if !IsCollision(field, newPos, I) {
+					pos = newPos
+				}
+			} else if IsKeyPressed(KEY_DOWN) {
+				newPos := Position{pos.x, pos.y + 1}
+				if !IsCollision(field, newPos, I) {
+					pos = newPos
+				}
+			} else if IsKeyPressed(KEY_Q) {
 				q = true
 				break
 			}
+			time.Sleep(1 * time.Millisecond)
 		}
 		if q {
 			break
