@@ -216,6 +216,24 @@ func main() {
 							}
 						}
 					}
+
+					for y := 0; y < FIELD_HEIGHT-1; y++ {
+						isFilled := true
+						for x := 0; x < FIELD_WIDTH; x++ {
+							if (*field)[y][x] == 0 {
+								isFilled = false
+								break
+							}
+						}
+						if isFilled {
+							for y2 := y; y2 > 0; y2-- {
+								for x := 0; x < FIELD_WIDTH; x++ {
+									(*field)[y2][x] = (*field)[y2-1][x]
+								}
+							}
+						}
+					}
+
 					*pos = Position{4, 0}
 					*block = distribution{}.BlockKind()
 				}
