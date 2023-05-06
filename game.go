@@ -141,6 +141,30 @@ func (g *Game) MoveBlock(newPos Position) {
 	}
 }
 
+func (g *Game) RotateRight() {
+	rotated := BlockShape{}
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			rotated[y][x] = g.block[3-x][y]
+		}
+	}
+	if !IsCollision(g.field, g.pos, rotated) {
+		g.block = rotated
+	}
+}
+
+func (g *Game) RotateLeft() {
+	rotated := BlockShape{}
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			rotated[y][x] = g.block[x][3-y]
+		}
+	}
+	if !IsCollision(g.field, g.pos, rotated) {
+		g.block = rotated
+	}
+}
+
 func (g *Game) Over() {
 	g.Draw()
 	fmt.Println("Game Over")

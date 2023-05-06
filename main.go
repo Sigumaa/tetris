@@ -60,11 +60,23 @@ func main() {
 			game.MoveBlock(newPos)
 			game.Draw()
 			mu.Unlock()
+		} else if IsKeyPressed(KEY_X) {
+			mu.Lock()
+			game.RotateRight()
+			game.Draw()
+			mu.Unlock()
+			time.Sleep(50 * time.Millisecond)
+		} else if IsKeyPressed(KEY_Z) {
+			mu.Lock()
+			game.RotateLeft()
+			game.Draw()
+			mu.Unlock()
+			time.Sleep(50 * time.Millisecond)
 		} else if IsKeyPressed(KEY_Q) {
 			fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 			game.Quit()
 		}
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	}
 
 }
