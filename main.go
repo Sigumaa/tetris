@@ -164,16 +164,26 @@ func main() {
 
 	{
 		pos := &pos
+		field := &field
 		go func() {
 			for {
-				time.Sleep(1 * time.Second)
 				mu.Lock()
 				newPos := Position{pos.x, pos.y + 1}
-				if !IsCollision(field, newPos, I) {
+				if !IsCollision(*field, newPos, I) {
 					*pos = newPos
+				} else {
+					for y := 0; y < 4; y++ {
+						for x := 0; x < 4; x++ {
+							if BLOCKS[I][y][x] == 1 {
+								(*field)[y+pos.y][x+pos.x] = 1
+							}
+						}
+					}
+					*pos = Position{4, 0}
 				}
-				Draw(field, *pos)
+				Draw(*field, *pos)
 				mu.Unlock()
+				time.Sleep(1 * time.Second)
 			}
 		}()
 	}
