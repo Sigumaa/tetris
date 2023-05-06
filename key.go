@@ -9,6 +9,7 @@ const (
 	KEY_Z       = 0x5a
 	KEY_LEFT    = 0x25
 	KEY_RIGHT   = 0x27
+	KEY_UP      = 0x26
 	KEY_DOWN    = 0x28
 )
 

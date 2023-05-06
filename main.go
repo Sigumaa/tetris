@@ -24,9 +24,7 @@ func main() {
 			if !IsCollision(game.field, newPos, game.block) {
 				game.pos = newPos
 			} else {
-				game.FixBlock()
-				game.EraseLine()
-				if err := game.SpawnBlock(); err != nil {
+				if game.landing() != nil {
 					game.Over()
 					mu.Unlock()
 					return
@@ -72,11 +70,22 @@ func main() {
 			game.Draw()
 			mu.Unlock()
 			time.Sleep(50 * time.Millisecond)
+		} else if IsKeyPressed(KEY_UP) {
+			mu.Lock()
+			game.HardDrop()
+			if game.landing() != nil {
+				game.Over()
+				mu.Unlock()
+				break
+			}
+			game.Draw()
+			mu.Unlock()
+			time.Sleep(100 * time.Millisecond)
 		} else if IsKeyPressed(KEY_Q) {
 			fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 			game.Quit()
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
-
+	game.Quit()
 }

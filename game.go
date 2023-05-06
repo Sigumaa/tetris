@@ -138,6 +138,26 @@ func (g *Game) MoveBlock(newPos Position) {
 	}
 }
 
+func (g *Game) HardDrop() {
+	for {
+		newPos := Position{g.pos.x, g.pos.y + 1}
+		if IsCollision(g.field, newPos, g.block) {
+			break
+		}
+		g.pos = newPos
+	}
+	g.MoveBlock(g.pos)
+}
+
+func (g *Game) landing() error {
+	g.FixBlock()
+	g.EraseLine()
+	if err := g.SpawnBlock(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (g *Game) RotateRight() {
 	rotated := BlockShape{}
 	for y := 0; y < 4; y++ {
