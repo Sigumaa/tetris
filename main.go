@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
 	"sync"
 	"syscall"
 	"time"
@@ -42,6 +44,35 @@ const (
 	L
 	T
 )
+
+func (b blockKind) String() string {
+	return [...]string{"I", "O", "S", "Z", "J", "L", "T"}[b]
+}
+
+type distribution struct{}
+
+func (d distribution) Intn(n int) int {
+	return rand.Intn(n)
+}
+
+func (d distribution) BlockKind() blockKind {
+	switch d.Intn(7) {
+	case 0:
+		return I
+	case 1:
+		return O
+	case 2:
+		return S
+	case 3:
+		return Z
+	case 4:
+		return J
+	case 5:
+		return L
+	default:
+		return T
+	}
+}
 
 type BlockShape [4][4]int
 
@@ -98,6 +129,9 @@ type Position struct {
 func IsCollision(field Field, pos Position, block blockKind) bool {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
+			if y+pos.y >= FIELD_HEIGHT || x+pos.x >= FIELD_WIDTH {
+				continue
+			}
 			if (field[y+pos.y][x+pos.x] & BLOCKS[block][y][x]) == 1 {
 				return true
 			}
@@ -106,11 +140,11 @@ func IsCollision(field Field, pos Position, block blockKind) bool {
 	return false
 }
 
-func Draw(field Field, pos Position) {
+func Draw(field Field, pos Position, block blockKind) {
 	fieldBuf := field
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if BLOCKS[I][y][x] == 1 {
+			if BLOCKS[block][y][x] == 1 {
 				fieldBuf[y+pos.y][x+pos.x] = 1
 			}
 		}
@@ -122,7 +156,7 @@ func Draw(field Field, pos Position) {
 			if fieldBuf[y][x] == 1 {
 				fmt.Print("[]")
 			} else {
-				fmt.Print(" .")
+				fmt.Print(" _")
 			}
 		}
 		fmt.Println()
@@ -156,32 +190,36 @@ func main() {
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	}
 	pos := Position{4, 0}
+	block := distribution{}.BlockKind()
+
 	fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 
 	mu.Lock()
-	Draw(field, pos)
+	Draw(field, pos, block)
 	mu.Unlock()
 
 	{
 		pos := &pos
 		field := &field
+		block := &block
 		go func() {
 			for {
 				mu.Lock()
 				newPos := Position{pos.x, pos.y + 1}
-				if !IsCollision(*field, newPos, I) {
+				if !IsCollision(*field, newPos, *block) {
 					*pos = newPos
 				} else {
 					for y := 0; y < 4; y++ {
 						for x := 0; x < 4; x++ {
-							if BLOCKS[I][y][x] == 1 {
+							if BLOCKS[*block][y][x] == 1 {
 								(*field)[y+pos.y][x+pos.x] = 1
 							}
 						}
 					}
 					*pos = Position{4, 0}
+					*block = distribution{}.BlockKind()
 				}
-				Draw(*field, *pos)
+				Draw(*field, *pos, *block)
 				mu.Unlock()
 				time.Sleep(1 * time.Second)
 			}
@@ -191,27 +229,30 @@ func main() {
 	for {
 		if IsKeyPressed(KEY_LEFT) {
 			mu.Lock()
-			newPos := Position{pos.x - 1, pos.y}
-			if !IsCollision(field, newPos, I) {
+			newPos := Position{
+				int(math.Max(float64(pos.x-1), 0)),
+				pos.y,
+			}
+			if !IsCollision(field, newPos, block) {
 				pos = newPos
 			}
-			Draw(field, pos)
+			Draw(field, pos, block)
 			mu.Unlock()
 		} else if IsKeyPressed(KEY_RIGHT) {
 			mu.Lock()
 			newPos := Position{pos.x + 1, pos.y}
-			if !IsCollision(field, newPos, I) {
+			if !IsCollision(field, newPos, block) {
 				pos = newPos
 			}
-			Draw(field, pos)
+			Draw(field, pos, block)
 			mu.Unlock()
 		} else if IsKeyPressed(KEY_DOWN) {
 			mu.Lock()
 			newPos := Position{pos.x, pos.y + 1}
-			if !IsCollision(field, newPos, I) {
+			if !IsCollision(field, newPos, block) {
 				pos = newPos
 			}
-			Draw(field, pos)
+			Draw(field, pos, block)
 			mu.Unlock()
 		} else if IsKeyPressed(KEY_Q) {
 			fmt.Println("\x1b[?25h")
