@@ -23,12 +23,15 @@ func (p *Position) Init() {
 	p.y = 0
 }
 
+const NEXT_LENGTH = 3
+
 type Game struct {
 	field  Field
 	pos    Position
 	block  BlockShape
 	hold   BlockShape
 	holded bool
+	next   []BlockShape
 }
 
 func NewGame() *Game {
@@ -62,6 +65,10 @@ func NewGame() *Game {
 	g.block = BLOCKS[distribution{}.BlockKind()]
 	g.hold = NONE_BLOCK
 	g.holded = false
+	g.next = make([]BlockShape, NEXT_LENGTH)
+	for i := 0; i < NEXT_LENGTH; i++ {
+		g.next[i] = BLOCKS[distribution{}.BlockKind()]
+	}
 	return g
 }
 
@@ -107,16 +114,29 @@ func (g *Game) Draw() {
 		}
 	}
 
-	fmt.Print("\033[2;28HHOLD")
+	fmt.Print("\033[1;28HHOLD")
 	if g.hold != NONE_BLOCK {
 		for y := 0; y < 4; y++ {
-			fmt.Printf("\033[%d;%dH", y+3, 28) // カーソルを移動
+			fmt.Printf("\033[%d;%dH", y+2, 28) // カーソルを移動
 			for x := 0; x < 4; x++ {
 				fmt.Printf("%s", ColorTable[g.hold[y][x]])
 			}
 			fmt.Println()
 		}
 	}
+	fmt.Println("\x1b[0m")
+
+	fmt.Print("\033[8;28HNEXT")
+	for i := 0; i < NEXT_LENGTH; i++ {
+		for y := 0; y < 4; y++ {
+			fmt.Printf("\033[%d;%dH", y+9+4*i, 28) // カーソルを移動
+			for x := 0; x < 4; x++ {
+				fmt.Printf("%s", ColorTable[g.next[i][y][x]])
+			}
+			fmt.Println()
+		}
+	}
+	fmt.Println("\x1b[0m")
 
 	fmt.Print("\x1b[H")
 	for y := 0; y < FIELD_HEIGHT-1; y++ {
@@ -130,7 +150,11 @@ func (g *Game) Draw() {
 
 func (g *Game) SpawnBlock() error {
 	g.pos.Init()
-	g.block = BLOCKS[distribution{}.BlockKind()]
+	g.block = g.next[0]
+	for i := 0; i < NEXT_LENGTH-1; i++ {
+		g.next[i] = g.next[i+1]
+	}
+	g.next[NEXT_LENGTH-1] = BLOCKS[distribution{}.BlockKind()]
 	if IsCollision(g.field, g.pos, g.block) {
 		return errors.New("game over")
 	}
