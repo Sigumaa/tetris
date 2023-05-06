@@ -2,8 +2,27 @@ package main
 
 import (
 	"fmt"
+	"syscall"
 	"time"
 )
+
+const (
+	KEY_PRESSED = 0x8000
+	KEY_Q       = 0x51
+	KEY_LEFT    = 0x25
+	KEY_RIGHT   = 0x27
+	KEY_DOWN    = 0x28
+)
+
+var (
+	user32               = syscall.NewLazyDLL("user32.dll")
+	procGetAsyncKeyState = user32.NewProc("GetAsyncKeyState")
+)
+
+func IsKeyPressed(keyCode int) bool {
+	ret, _, _ := procGetAsyncKeyState.Call(uintptr(keyCode))
+	return ret&KEY_PRESSED != 0
+}
 
 const (
 	FIELD_WIDTH  = 13
@@ -115,7 +134,7 @@ func main() {
 
 	fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 
-	for i := 0; i < 30; i++ {
+	for {
 		fieldBuf := field
 
 		if !IsCollision(field, pos, I) {
@@ -142,7 +161,18 @@ func main() {
 			}
 			fmt.Println()
 		}
-		time.Sleep(1 * time.Second)
+
+		q := false
+		for i := 0; i < 60; i++ {
+			time.Sleep(1 * time.Millisecond)
+			if IsKeyPressed(KEY_Q) {
+				q = true
+				break
+			}
+		}
+		if q {
+			break
+		}
 	}
 	fmt.Println("\x1b[?25h")
 }
