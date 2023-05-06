@@ -64,7 +64,7 @@ func main() {
 			fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 			game.Quit()
 		}
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
 
 }

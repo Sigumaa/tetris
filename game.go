@@ -26,7 +26,7 @@ func (p *Position) Init() {
 type Game struct {
 	field Field
 	pos   Position
-	block blockKind
+	block BlockShape
 }
 
 func NewGame() *Game {
@@ -56,18 +56,17 @@ func NewGame() *Game {
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	}
 	g.pos.Init()
-	g.block = distribution{}.BlockKind()
-
+	g.block = BLOCKS[distribution{}.BlockKind()]
 	return g
 }
 
-func IsCollision(field Field, pos Position, block blockKind) bool {
+func IsCollision(field Field, pos Position, block BlockShape) bool {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
 			if y+pos.y >= FIELD_HEIGHT || x+pos.x >= FIELD_WIDTH {
 				continue
 			}
-			if (field[y+pos.y][x+pos.x] & BLOCKS[block][y][x]) == 1 {
+			if (field[y+pos.y][x+pos.x] & block[y][x]) == 1 {
 				return true
 			}
 		}
@@ -79,7 +78,7 @@ func (g *Game) Draw() {
 	fieldBuf := g.field
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if BLOCKS[g.block][y][x] == 1 {
+			if g.block[y][x] == 1 {
 				fieldBuf[y+g.pos.y][x+g.pos.x] = 1
 			}
 		}
@@ -100,7 +99,7 @@ func (g *Game) Draw() {
 
 func (g *Game) SpawnBlock() error {
 	g.pos.Init()
-	g.block = distribution{}.BlockKind()
+	g.block = BLOCKS[distribution{}.BlockKind()]
 	if IsCollision(g.field, g.pos, g.block) {
 		return errors.New("game over")
 	}
@@ -110,7 +109,7 @@ func (g *Game) SpawnBlock() error {
 func (g *Game) FixBlock() {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
-			if BLOCKS[g.block][y][x] == 1 {
+			if g.block[y][x] == 1 {
 				g.field[y+g.pos.y][x+g.pos.x] = 1
 			}
 		}
