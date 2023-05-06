@@ -1,6 +1,7 @@
 tetris (for Windows)
 ====================
-This is a simple tetris game for Windows. It is written in Golang and Windows API.
+This game allows you to display the block placement location, hold the block, and a list of upcoming blocks.  
+It is a simple yet fun implementation of Tetris using golang and the Windows API.
 
 Demo :D
 ----
