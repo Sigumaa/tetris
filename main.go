@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -105,7 +106,32 @@ func IsCollision(field Field, pos Position, block blockKind) bool {
 	return false
 }
 
+func Draw(field Field, pos Position) {
+	fieldBuf := field
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			if BLOCKS[I][y][x] == 1 {
+				fieldBuf[y+pos.y][x+pos.x] = 1
+			}
+		}
+	}
+
+	fmt.Print("\x1b[H")
+	for y := 0; y < FIELD_HEIGHT; y++ {
+		for x := 0; x < FIELD_WIDTH; x++ {
+			if fieldBuf[y][x] == 1 {
+				fmt.Print("[]")
+			} else {
+				fmt.Print(" .")
+			}
+		}
+		fmt.Println()
+	}
+}
+
 func main() {
+	var mu sync.Mutex
+
 	field := [21][13]int{
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -129,66 +155,58 @@ func main() {
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	}
-
 	pos := Position{4, 0}
-
 	fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
 
-	for {
-		fieldBuf := field
-		newPos := Position{pos.x, pos.y + 1}
+	mu.Lock()
+	Draw(field, pos)
+	mu.Unlock()
 
-		if !IsCollision(field, newPos, I) {
-			pos = newPos
-		}
-
-		for y := 0; y < 4; y++ {
-			for x := 0; x < 4; x++ {
-				if BLOCKS[I][y][x] == 1 {
-					fieldBuf[pos.y+y][pos.x+x] = 1
-				}
-			}
-		}
-
-		// フィールドを描画
-		fmt.Println("\x1b[H")
-		for y := 0; y < FIELD_HEIGHT; y++ {
-			for x := 0; x < FIELD_WIDTH; x++ {
-				if fieldBuf[y][x] == 1 {
-					fmt.Print("[]")
-				} else {
-					fmt.Print(" .")
-				}
-			}
-			fmt.Println()
-		}
-
-		q := false
-		for i := 0; i < 60; i++ {
-			if IsKeyPressed(KEY_LEFT) {
-				newPos := Position{pos.x - 1, pos.y}
-				if !IsCollision(field, newPos, I) {
-					pos = newPos
-				}
-			} else if IsKeyPressed(KEY_RIGHT) {
-				newPos := Position{pos.x + 1, pos.y}
-				if !IsCollision(field, newPos, I) {
-					pos = newPos
-				}
-			} else if IsKeyPressed(KEY_DOWN) {
+	{
+		pos := &pos
+		go func() {
+			for {
+				time.Sleep(1 * time.Second)
+				mu.Lock()
 				newPos := Position{pos.x, pos.y + 1}
 				if !IsCollision(field, newPos, I) {
-					pos = newPos
+					*pos = newPos
 				}
-			} else if IsKeyPressed(KEY_Q) {
-				q = true
-				break
+				Draw(field, *pos)
+				mu.Unlock()
 			}
-			time.Sleep(1 * time.Millisecond)
-		}
-		if q {
-			break
-		}
+		}()
 	}
-	fmt.Println("\x1b[?25h")
+
+	for {
+		if IsKeyPressed(KEY_LEFT) {
+			mu.Lock()
+			newPos := Position{pos.x - 1, pos.y}
+			if !IsCollision(field, newPos, I) {
+				pos = newPos
+			}
+			Draw(field, pos)
+			mu.Unlock()
+		} else if IsKeyPressed(KEY_RIGHT) {
+			mu.Lock()
+			newPos := Position{pos.x + 1, pos.y}
+			if !IsCollision(field, newPos, I) {
+				pos = newPos
+			}
+			Draw(field, pos)
+			mu.Unlock()
+		} else if IsKeyPressed(KEY_DOWN) {
+			mu.Lock()
+			newPos := Position{pos.x, pos.y + 1}
+			if !IsCollision(field, newPos, I) {
+				pos = newPos
+			}
+			Draw(field, pos)
+			mu.Unlock()
+		} else if IsKeyPressed(KEY_Q) {
+			fmt.Println("\x1b[?25h")
+			return
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 }
