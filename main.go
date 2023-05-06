@@ -18,6 +18,7 @@ func main() {
 
 	go func() {
 		for {
+			time.Sleep(1 * time.Second)
 			mu.Lock()
 			newPos := Position{game.pos.x, game.pos.y + 1}
 			if !IsCollision(game.field, newPos, game.block) {
@@ -25,13 +26,16 @@ func main() {
 			} else {
 				game.FixBlock()
 				game.EraseLine()
-				game.pos.Init()
-				game.block = distribution{}.BlockKind()
+				if err := game.SpawnBlock(); err != nil {
+					game.Over()
+					mu.Unlock()
+					return
+				}
 			}
 			game.Draw()
 			mu.Unlock()
-			time.Sleep(1 * time.Second)
 		}
+
 	}()
 
 	for {
@@ -57,9 +61,10 @@ func main() {
 			game.Draw()
 			mu.Unlock()
 		} else if IsKeyPressed(KEY_Q) {
-			fmt.Println("\x1b[?25h")
-			return
+			fmt.Println("\x1b[2J\x1b[H\x1b[?25l")
+			game.Quit()
 		}
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond)
 	}
+
 }

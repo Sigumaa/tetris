@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"os"
+)
 
 const (
 	FIELD_WIDTH  = 13
@@ -94,6 +98,15 @@ func (g *Game) Draw() {
 	}
 }
 
+func (g *Game) SpawnBlock() error {
+	g.pos.Init()
+	g.block = distribution{}.BlockKind()
+	if IsCollision(g.field, g.pos, g.block) {
+		return errors.New("game over")
+	}
+	return nil
+}
+
 func (g *Game) FixBlock() {
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -127,4 +140,15 @@ func (g *Game) MoveBlock(newPos Position) {
 	if !IsCollision(g.field, newPos, g.block) {
 		g.pos = newPos
 	}
+}
+
+func (g *Game) Over() {
+	g.Draw()
+	fmt.Println("Game Over")
+	fmt.Println("press `q` key to exit")
+}
+
+func (g *Game) Quit() {
+	fmt.Print("\x1b[?25h")
+	os.Exit(0)
 }
