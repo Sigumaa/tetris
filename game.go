@@ -25,6 +25,15 @@ func (p *Position) Init() {
 
 const NEXT_LENGTH = 3
 
+// score table
+var ScoreTable = []int{
+	0,
+	1,
+	5,
+	25,
+	100,
+}
+
 type Game struct {
 	field  Field
 	pos    Position
@@ -32,6 +41,7 @@ type Game struct {
 	hold   BlockShape
 	holded bool
 	next   []BlockShape
+	score  int
 }
 
 func NewGame() *Game {
@@ -69,6 +79,7 @@ func NewGame() *Game {
 	for i := 0; i < NEXT_LENGTH; i++ {
 		g.next[i] = BLOCKS[distribution{}.BlockKind()]
 	}
+	g.score = 0
 	return g
 }
 
@@ -114,10 +125,10 @@ func (g *Game) Draw() {
 		}
 	}
 
-	fmt.Print("\033[1;28HHOLD")
+	fmt.Print("\033[3;28HHOLD")
 	if g.hold != NONE_BLOCK {
 		for y := 0; y < 4; y++ {
-			fmt.Printf("\033[%d;%dH", y+2, 28) // カーソルを移動
+			fmt.Printf("\033[%d;%dH", y+4, 28)
 			for x := 0; x < 4; x++ {
 				fmt.Printf("%s", ColorTable[g.hold[y][x]])
 			}
@@ -129,13 +140,16 @@ func (g *Game) Draw() {
 	fmt.Print("\033[8;28HNEXT")
 	for i := 0; i < NEXT_LENGTH; i++ {
 		for y := 0; y < 4; y++ {
-			fmt.Printf("\033[%d;%dH", y+9+4*i, 28) // カーソルを移動
+			fmt.Printf("\033[%d;%dH", y+9+4*i, 28)
 			for x := 0; x < 4; x++ {
 				fmt.Printf("%s", ColorTable[g.next[i][y][x]])
 			}
 			fmt.Println()
 		}
 	}
+	fmt.Println("\x1b[0m")
+
+	fmt.Print("\033[1;28HSCORE", ":", g.score)
 	fmt.Println("\x1b[0m")
 
 	fmt.Print("\x1b[H")
@@ -171,7 +185,8 @@ func (g *Game) FixBlock() {
 	}
 }
 
-func (g *Game) EraseLine() {
+func (g *Game) EraseLine() int {
+	count := 0
 	for y := 1; y < FIELD_HEIGHT-2; y++ {
 		isFilled := true
 		for x := 2; x < FIELD_WIDTH-2; x++ {
@@ -181,6 +196,7 @@ func (g *Game) EraseLine() {
 			}
 		}
 		if isFilled {
+			count++
 			for y2 := y; y2 > 0; y2-- {
 				for x := 0; x < FIELD_WIDTH; x++ {
 					g.field[y2][x] = g.field[y2-1][x]
@@ -188,6 +204,7 @@ func (g *Game) EraseLine() {
 			}
 		}
 	}
+	return count
 }
 
 func (g *Game) MoveBlock(newPos Position) {
@@ -224,7 +241,7 @@ func (g *Game) Hold() {
 
 func (g *Game) landing() error {
 	g.FixBlock()
-	g.EraseLine()
+	g.score += ScoreTable[g.EraseLine()]
 	if err := g.SpawnBlock(); err != nil {
 		return err
 	}
